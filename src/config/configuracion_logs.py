@@ -24,12 +24,10 @@ def configurar_logs(app):
 
     inyector = InyectorTrazabilidad()
 
-    # Consola
     handler_consola = logging.StreamHandler()
     handler_consola.setFormatter(formato)
     handler_consola.addFilter(inyector)
 
-    # Archivo
     handler_archivo = RotatingFileHandler(
         os.path.join(log_dir, 'aplicacion.log'),
         maxBytes=10485760,
@@ -38,12 +36,10 @@ def configurar_logs(app):
     handler_archivo.setFormatter(formato)
     handler_archivo.addFilter(inyector)
 
-    # Configurar logger de la app
     app.logger.setLevel(logging.INFO)
     app.logger.addHandler(handler_consola)
     app.logger.addHandler(handler_archivo)
 
-    # Evitar logs duplicados
     app.logger.propagate = False
 
     logging.getLogger('werkzeug').setLevel(logging.ERROR)
