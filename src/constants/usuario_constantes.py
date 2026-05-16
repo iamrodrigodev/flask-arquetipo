@@ -10,6 +10,6 @@ class UsuarioValidacionConstantes:
     CODIGO_POSTAL_MAX = 10
     FOTO_URL_MAX = 500
     CODIGO_RECUPERACION_MAX = 6
-    
+
     NOMBRE_APELLIDOS_PATTERN = r"^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$"
     TELEFONO_PATTERN = r"^$|^\+519\d{8}$"

@@ -1,3 +1,4 @@
+from flask import current_app
 from src.model.usuario.rol import Rol
 from src.config.base_de_datos import db
 
@@ -8,6 +9,12 @@ class RolRepository:
 
     @staticmethod
     def guardar(rol):
-        db.session.add(rol)
-        db.session.commit()
-        return rol
+        try:
+            db.session.add(rol)
+            db.session.commit()
+            current_app.logger.debug(f"Rol guardado en DB: {rol.nombre}")
+            return rol
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f"Error al guardar rol {rol.nombre}: {str(e)}")
+            raise e

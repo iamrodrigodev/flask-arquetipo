@@ -4,22 +4,20 @@ from datetime import datetime
 class ApiDeRespuesta:
     @staticmethod
     def exito(mensaje_enum, datos=None, codigo=200):
-        # El mensaje puede venir de MensajesDeConfirmacion o ser un string
         mensaje = mensaje_enum.value if hasattr(mensaje_enum, 'value') else mensaje_enum
-        
+
         respuesta = {
             "estado": codigo,
             "mensaje": mensaje,
             "datos": datos
         }
-        
-        # Eliminar campos nulos (simulando @JsonInclude(JsonInclude.Include.NON_NULL))
+
         return jsonify({k: v for k, v in respuesta.items() if v is not None}), codigo
 
     @staticmethod
     def error(mensaje_enum, detalles=None, codigo=None, errores=None):
         ahora = datetime.now()
-        
+
         if hasattr(mensaje_enum, 'mensaje'):
             mensaje = mensaje_enum.mensaje
             codigo_final = codigo or mensaje_enum.codigo
@@ -35,7 +33,7 @@ class ApiDeRespuesta:
             "hora": ahora.strftime("%H:%M:%S"),
             "errores": errores
         }
-        
+
         return jsonify({k: v for k, v in respuesta.items() if v is not None}), codigo_final
 
     @staticmethod

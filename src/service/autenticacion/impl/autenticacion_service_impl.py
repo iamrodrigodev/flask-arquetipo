@@ -1,5 +1,6 @@
 import bcrypt
 from datetime import datetime
+from flask import current_app
 from src.repository.usuario_repository import UsuarioRepository
 from src.repository.rol_repository import RolRepository
 from src.model.usuario.usuario import Usuario
@@ -10,15 +11,20 @@ from src.util.tiempo_util import TiempoUtil
 from src.constants.seguridad_constantes import SeguridadValidacionConstantes
 from src.exception.errores_personalizados import ExcepcionDeRefugioGeneral, ExcepcionDeRecursoNoEncontrado
 from src.exception.mensajes_error import MensajesDeError
+from src.mapper.autenticacion_mapper import AutenticacionMapper
+from src.service.autenticacion.i_autenticacion_service import IAutenticacionService
 
-class AutenticacionService:
+class AutenticacionServiceImpl(IAutenticacionService):
     def __init__(self):
         self.usuario_repo = UsuarioRepository()
         self.rol_repo = RolRepository()
         self.jwt_service = ServicioJwt()
+        self.mapper = AutenticacionMapper()
 
     def registrar_cuenta(self, datos):
+        current_app.logger.info(f"Iniciando registro de cuenta para: {datos.correo}")
         if self.usuario_repo.buscar_por_correo(datos.correo):
+            current_app.logger.warn(f"Intento de registro con correo duplicado: {datos.correo}")
             raise ExcepcionDeRefugioGeneral(MensajesDeError.EMAIL_DUPLICADO)
 
         rol_usuario = self.rol_repo.buscar_por_nombre(NombreRol.USUARIO.value)
@@ -46,11 +52,14 @@ class AutenticacionService:
             nuevo_usuario.direccion = direccion
 
         self.usuario_repo.guardar(nuevo_usuario)
-        return True
+        current_app.logger.info(f"Cuenta registrada exitosamente: {datos.correo}")
+        return None
 
     def iniciar_sesion(self, datos):
+        current_app.logger.info(f"Intento de inicio de sesión: {datos.correo}")
         usuario = self.usuario_repo.buscar_por_correo(datos.correo.lower())
         if not usuario:
+            current_app.logger.warn(f"Usuario no encontrado: {datos.correo}")
             raise ExcepcionDeRefugioGeneral(MensajesDeError.CREDENCIALES_INVALIDAS)
 
         ahora = datetime.utcnow()
@@ -59,15 +68,21 @@ class AutenticacionService:
         if bcrypt.checkpw(datos.clave.encode('utf-8'), usuario.clave.encode('utf-8')):
             token = self.jwt_service.generar_token(usuario.id)
             self._reiniciar_intentos_login(usuario)
-            return usuario, token
+            current_app.logger.info(f"Inicio de sesión exitoso: {datos.correo}")
+            return self.mapper.de_usuario_a_inicio_sesion_respuesta(usuario, token)
         else:
+            current_app.logger.warn(f"Credenciales inválidas para: {datos.correo}")
             self._registrar_intento_fallido_login(usuario, ahora)
             raise ExcepcionDeRefugioGeneral(MensajesDeError.CREDENCIALES_INVALIDAS)
+
+    def obtener_sesion(self, usuario):
+        return self.mapper.de_usuario_a_inicio_sesion_respuesta(usuario, "")
 
     def _validar_bloqueo_login(self, usuario, ahora):
         if usuario.fecha_bloqueo_login:
             if TiempoUtil.esta_en_periodo_de_bloqueo(ahora, usuario.fecha_bloqueo_login, SeguridadValidacionConstantes.LOGIN_MINUTOS_BLOQUEO):
                 minutos = TiempoUtil.calcular_minutos_restantes(ahora, usuario.fecha_bloqueo_login, SeguridadValidacionConstantes.LOGIN_MINUTOS_BLOQUEO)
+                current_app.logger.warn(f"Cuenta bloqueada temporalmente: {usuario.correo}")
                 raise ExcepcionDeRefugioGeneral(MensajesDeError.CUENTA_BLOQUEADA, detalles=f"Faltan {minutos} minutos")
             else:
                 usuario.intentos_fallidos_login = 0
@@ -78,6 +93,7 @@ class AutenticacionService:
         usuario.intentos_fallidos_login = (usuario.intentos_fallidos_login or 0) + 1
         if usuario.intentos_fallidos_login >= SeguridadValidacionConstantes.LOGIN_MAX_INTENTOS:
             usuario.fecha_bloqueo_login = ahora
+            current_app.logger.warn(f"Cuenta bloqueada por exceso de intentos: {usuario.correo}")
         self.usuario_repo.guardar(usuario)
 
     def _reiniciar_intentos_login(self, usuario):
