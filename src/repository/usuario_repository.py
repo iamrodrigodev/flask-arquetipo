@@ -1,3 +1,4 @@
+from flask import current_app
 from src.model.usuario.usuario import Usuario
 from src.config.base_de_datos import db
 
@@ -12,11 +13,23 @@ class UsuarioRepository:
 
     @staticmethod
     def guardar(usuario):
-        db.session.add(usuario)
-        db.session.commit()
-        return usuario
+        try:
+            db.session.add(usuario)
+            db.session.commit()
+            current_app.logger.debug(f"Usuario guardado/actualizado en DB: {usuario.correo}")
+            return usuario
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f"Error al guardar usuario {usuario.correo}: {str(e)}")
+            raise e
 
     @staticmethod
     def eliminar(usuario):
-        db.session.delete(usuario)
-        db.session.commit()
+        try:
+            db.session.delete(usuario)
+            db.session.commit()
+            current_app.logger.info(f"Usuario eliminado de DB: {usuario.correo}")
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f"Error al eliminar usuario {usuario.correo}: {str(e)}")
+            raise e
