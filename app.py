@@ -1,11 +1,13 @@
 import os
 from flask import Flask
 from dotenv import load_dotenv
+
+# Cargar variables de entorno antes de importar otros módulos locales
+load_dotenv()
+
 from src.config.iniciador import IniciadorApp
 
 def crear_app():
-    load_dotenv()
-    
     app = Flask(__name__)
     IniciadorApp.configurar(app)
     
