@@ -32,3 +32,5 @@ class IniciadorApp:
         # 5. Blueprints y Manejadores
         registrar_rutas(app)
         registrar_manejadores_error(app)
+        
+        app.logger.info("Aplicación inicializada")
