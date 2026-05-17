@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from src.config.base_de_datos import db
 from src.constants.validaciones.usuario_validacion_constantes import UsuarioValidacionConstantes
 
@@ -18,8 +18,8 @@ class Usuario(db.Model):
     intentos_fallidos_login = db.Column(db.SmallInteger, default=0)
     fecha_bloqueo_login = db.Column(db.DateTime)
     
-    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
-    fecha_actualizacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    fecha_creacion = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    fecha_actualizacion = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     rol_id = db.Column(db.SmallInteger, db.ForeignKey('autenticacion.roles.id'), nullable=False)
     rol = db.relationship('Rol', backref=db.backref('usuarios', lazy='dynamic'))
