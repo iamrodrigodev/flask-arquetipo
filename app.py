@@ -1,11 +1,10 @@
 import os
 from flask import Flask
-from sqlalchemy import text
 from dotenv import load_dotenv
 from src.config.base_de_datos import db, migrate
 from src.config.configuracion_cors import configurar_cors
 from src.config.configuracion_logs import configurar_logs
-from src.config.datos_iniciales import sembrar_datos_iniciales
+from src.config.datos_iniciales import inicializar_datos
 from src.security.filtro_trazabilidad import FiltroDeTrazabilidad
 from src.exception.manejador_global import registrar_manejadores_error
 from src.controller.autenticacion_controller import autenticacion_bp
@@ -27,17 +26,8 @@ def crear_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
-    with app.app_context():
-        try:
-            db.session.execute(text("CREATE SCHEMA IF NOT EXISTS autenticacion;"))
-            db.session.commit()
-            app.logger.info("Esquema 'autenticacion' verificado/creado")
-        except Exception as e:
-            app.logger.error(f"Error al crear esquema: {str(e)}")
-
-        db.create_all()
-    
-    sembrar_datos_iniciales(app)
+    # Orquestador de infraestructura y datos iniciales (Ordenado)
+    inicializar_datos(app)
     
     app.register_blueprint(autenticacion_bp, url_prefix='/api/autenticacion')
     app.register_blueprint(usuario_bp, url_prefix='/api/usuario')
