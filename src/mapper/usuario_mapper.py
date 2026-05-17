@@ -15,4 +15,4 @@ class UsuarioMapper:
             telefono=usuario.telefono,
             foto_url=usuario.foto_url,
             rol=rol_dto
-        ).dict()
+        ).model_dump()
