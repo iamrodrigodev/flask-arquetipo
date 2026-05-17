@@ -11,6 +11,6 @@ class ExcepcionDeRecursoNoEncontrado(ExcepcionBase):
     def __init__(self, detalles=None):
         super().__init__(MensajesDeError.RECURSO_NO_ENCONTRADO, detalles)
 
-class ExcepcionDeRefugioGeneral(ExcepcionBase):
+class ExcepcionDeNegocio(ExcepcionBase):
     def __init__(self, mensaje_enum: MensajesDeError, detalles=None, errores=None):
         super().__init__(mensaje_enum, detalles, errores)
