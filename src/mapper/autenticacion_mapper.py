@@ -15,4 +15,4 @@ class AutenticacionMapper:
             foto_url=usuario.foto_url,
             rol=rol_dto,
             token=token
-        ).dict()
+        ).model_dump()
