@@ -5,7 +5,7 @@
 ### 1. Levantar la Base de Datos (PostgreSQL)
 Utiliza Docker para iniciar una instancia lista para el arquetipo:
 ```bash
-docker run -d --name postgres-arquetipo -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=arquetipo_db postgres:15-alphine
+docker run -d --name postgres-arquetipo -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=arquetipo_db postgres:15-alpine
 ```
 
 ### 2. Configurar el Entorno de Python
