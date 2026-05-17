@@ -1,25 +1,6 @@
-# Arquetipo Flask N-Tier (Arquitectura Profesional)
+# Arquetipo Flask
 
-Este repositorio es una base sólida y profesional (arquetipo) diseñada para desarrolladores y estudiantes que buscan implementar servidores Flask siguiendo estándares de ingeniería de software de alto nivel, inspirados en la arquitectura N-Capas de Java (Spring Boot).
-
-## 🚀 Características Principales
-
-- **Arquitectura N-Tier**: Separación estricta de responsabilidades (Controladores, Servicios, Repositorios y Modelos).
-- **Seguridad Robusta**: 
-  - Autenticación basada en JWT (Bearer Token) mediante cabeceras HTTP.
-  - Control de acceso basado en roles (ADMINISTRADOR y USUARIO).
-  - Bloqueo automático de cuenta tras intentos fallidos de inicio de sesión.
-- **Gestión de Datos Inteligente**:
-  - Sincronización automática de tablas y esquemas en PostgreSQL.
-  - Semilla de datos (Seeding) para roles y usuarios base.
-  - Catálogo completo de ubicaciones (Departamentos, Provincias, Distritos de Perú) precargado mediante SQL.
-- **Calidad de Código**:
-  - Validación de datos y sanitización segura (XSS) directamente en la capa de DTOs.
-  - Logs estructurados con ID de trazabilidad e IP del cliente para auditoría.
-  - Manejo global de excepciones con respuestas JSON estandarizadas.
-- **Interoperabilidad**: Colección de Postman incluida para pruebas inmediatas.
-
-## 🛠️ Guía de Inicio Rápido
+## Guía de Inicio Rápido
 
 ### 1. Levantar la Base de Datos (PostgreSQL)
 Utiliza Docker para iniciar una instancia lista para el arquetipo:
