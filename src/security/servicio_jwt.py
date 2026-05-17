@@ -1,5 +1,5 @@
 import jwt
-from datetime import datetime
+from datetime import datetime, timezone
 from flask import current_app
 
 class ServicioJwt:
@@ -7,8 +7,8 @@ class ServicioJwt:
     def generar_token(usuario_id):
         payload = {
             'sub': usuario_id,
-            'iat': datetime.utcnow(),
-            'exp': datetime.utcnow() + current_app.config['JWT_EXPIRACION_TOKEN']
+            'iat': datetime.now(timezone.utc),
+            'exp': datetime.now(timezone.utc) + current_app.config['JWT_EXPIRACION_TOKEN']
         }
         return jwt.encode(
             payload,

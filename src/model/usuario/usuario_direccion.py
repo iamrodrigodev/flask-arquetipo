@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from src.config.base_de_datos import db
 from src.constants.validaciones.usuario_validacion_constantes import UsuarioValidacionConstantes
 from src.constants.validaciones.ubicacion_validacion_constantes import UbicacionValidacionConstantes
@@ -15,8 +15,8 @@ class UsuarioDireccion(db.Model):
     referencia = db.Column(db.String(UsuarioValidacionConstantes.REFERENCIA_MAX))
     codigo_postal = db.Column(db.String(UsuarioValidacionConstantes.CODIGO_POSTAL_MAX))
     
-    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
-    fecha_actualizacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    fecha_creacion = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    fecha_actualizacion = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     usuario = db.relationship('Usuario', back_populates='direccion')
     distrito = db.relationship('src.model.ubicacion.distrito.Distrito', backref=db.backref('usuario_direcciones', lazy='dynamic'))

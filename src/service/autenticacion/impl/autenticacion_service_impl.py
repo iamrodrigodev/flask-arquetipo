@@ -1,5 +1,5 @@
 import bcrypt
-from datetime import datetime
+from datetime import datetime, timezone
 from flask import current_app
 from src.repository.usuario_repository import UsuarioRepository
 from src.repository.rol_repository import RolRepository
@@ -62,7 +62,7 @@ class AutenticacionServiceImpl(IAutenticacionService):
             current_app.logger.warning(f"Usuario no encontrado: {datos.correo}")
             raise ExcepcionDeNegocio(MensajesDeError.CREDENCIALES_INVALIDAS)
 
-        ahora = datetime.utcnow()
+        ahora = datetime.now(timezone.utc)
         self._validar_bloqueo_login(usuario, ahora)
 
         if bcrypt.checkpw(datos.clave.encode('utf-8'), usuario.clave.encode('utf-8')):
