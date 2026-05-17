@@ -9,7 +9,7 @@ from src.model.usuario.rol import NombreRol
 from src.security.servicio_jwt import ServicioJwt
 from src.util.tiempo_util import TiempoUtil
 from src.constants.seguridad_constantes import SeguridadValidacionConstantes
-from src.exception.errores_personalizados import ExcepcionDeRefugioGeneral, ExcepcionDeRecursoNoEncontrado
+from src.exception.errores_personalizados import ExcepcionDeNegocio, ExcepcionDeRecursoNoEncontrado
 from src.exception.mensajes_error import MensajesDeError
 from src.mapper.autenticacion_mapper import AutenticacionMapper
 from src.service.autenticacion.i_autenticacion_service import IAutenticacionService
@@ -25,7 +25,7 @@ class AutenticacionServiceImpl(IAutenticacionService):
         current_app.logger.info(f"Iniciando registro de cuenta para: {datos.correo}")
         if self.usuario_repo.buscar_por_correo(datos.correo):
             current_app.logger.warn(f"Intento de registro con correo duplicado: {datos.correo}")
-            raise ExcepcionDeRefugioGeneral(MensajesDeError.EMAIL_DUPLICADO)
+            raise ExcepcionDeNegocio(MensajesDeError.EMAIL_DUPLICADO)
 
         rol_usuario = self.rol_repo.buscar_por_nombre(NombreRol.USUARIO.value)
         if not rol_usuario:
@@ -60,7 +60,7 @@ class AutenticacionServiceImpl(IAutenticacionService):
         usuario = self.usuario_repo.buscar_por_correo(datos.correo.lower())
         if not usuario:
             current_app.logger.warn(f"Usuario no encontrado: {datos.correo}")
-            raise ExcepcionDeRefugioGeneral(MensajesDeError.CREDENCIALES_INVALIDAS)
+            raise ExcepcionDeNegocio(MensajesDeError.CREDENCIALES_INVALIDAS)
 
         ahora = datetime.utcnow()
         self._validar_bloqueo_login(usuario, ahora)
@@ -73,7 +73,7 @@ class AutenticacionServiceImpl(IAutenticacionService):
         else:
             current_app.logger.warn(f"Credenciales inválidas para: {datos.correo}")
             self._registrar_intento_fallido_login(usuario, ahora)
-            raise ExcepcionDeRefugioGeneral(MensajesDeError.CREDENCIALES_INVALIDAS)
+            raise ExcepcionDeNegocio(MensajesDeError.CREDENCIALES_INVALIDAS)
 
     def obtener_sesion(self, usuario):
         return self.mapper.de_usuario_a_inicio_sesion_respuesta(usuario, "")
@@ -83,7 +83,7 @@ class AutenticacionServiceImpl(IAutenticacionService):
             if TiempoUtil.esta_en_periodo_de_bloqueo(ahora, usuario.fecha_bloqueo_login, SeguridadValidacionConstantes.LOGIN_MINUTOS_BLOQUEO):
                 minutos = TiempoUtil.calcular_minutos_restantes(ahora, usuario.fecha_bloqueo_login, SeguridadValidacionConstantes.LOGIN_MINUTOS_BLOQUEO)
                 current_app.logger.warn(f"Cuenta bloqueada temporalmente: {usuario.correo}")
-                raise ExcepcionDeRefugioGeneral(MensajesDeError.CUENTA_BLOQUEADA, detalles=f"Faltan {minutos} minutos")
+                raise ExcepcionDeNegocio(MensajesDeError.CUENTA_BLOQUEADA, detalles=f"Faltan {minutos} minutos")
             else:
                 usuario.intentos_fallidos_login = 0
                 usuario.fecha_bloqueo_login = None
