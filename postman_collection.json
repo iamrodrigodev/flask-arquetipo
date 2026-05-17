@@ -7,6 +7,29 @@
 	},
 	"item": [
 		{
+			"name": "Sistema",
+			"item": [
+				{
+					"name": "Verificar Salud",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/salud",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"salud"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Autenticación",
 			"item": [
 				{
