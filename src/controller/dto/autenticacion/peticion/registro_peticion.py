@@ -2,18 +2,20 @@ from pydantic import BaseModel, Field, field_validator
 from pydantic_core import PydanticCustomError
 import re
 from src.security.sanitizacion.sanitizador_entrada import SanitizadorDeEntrada
+from src.constants.validaciones.usuario_validacion_constantes import UsuarioValidacionConstantes
+from src.constants.validaciones.ubicacion_validacion_constantes import UbicacionValidacionConstantes
 
 class RegistroPeticion(BaseModel):
-    nombre: str = Field(...)
-    apellidos: str = Field(...)
-    correo: str = Field(...)
-    clave: str = Field(...)
+    nombre: str = Field(..., max_length=UsuarioValidacionConstantes.NOMBRE_MAX)
+    apellidos: str = Field(..., max_length=UsuarioValidacionConstantes.APELLIDOS_MAX)
+    correo: str = Field(..., max_length=UsuarioValidacionConstantes.CORREO_MAX)
+    clave: str = Field(..., min_length=UsuarioValidacionConstantes.CLAVE_MIN, max_length=UsuarioValidacionConstantes.CLAVE_MAX)
     
-    telefono: str = Field(None)
-    direccion: str = Field(None)
-    referencia: str = Field(None)
-    codigo_postal: str = Field(None)
-    distrito_id: str = Field(None)
+    telefono: str = Field(None, max_length=UsuarioValidacionConstantes.TELEFONO_MAX)
+    direccion: str = Field(None, max_length=UsuarioValidacionConstantes.DIRECCION_MAX)
+    referencia: str = Field(None, max_length=UsuarioValidacionConstantes.REFERENCIA_MAX)
+    codigo_postal: str = Field(None, max_length=UsuarioValidacionConstantes.CODIGO_POSTAL_MAX)
+    distrito_id: str = Field(None, max_length=UbicacionValidacionConstantes.DISTRITO_ID_MAX)
 
     @field_validator('nombre', 'apellidos', 'direccion', 'referencia', 'codigo_postal', mode='before')
     @classmethod
@@ -47,6 +49,6 @@ class RegistroPeticion(BaseModel):
     @field_validator('clave')
     @classmethod
     def validar_clave(cls, v):
-        if not v or len(v) < 6:
-            raise PydanticCustomError('value_error', 'La clave debe tener al menos 6 caracteres')
+        if not v or len(v) < UsuarioValidacionConstantes.CLAVE_MIN:
+            raise PydanticCustomError('value_error', f'La clave debe tener al menos {UsuarioValidacionConstantes.CLAVE_MIN} caracteres')
         return v

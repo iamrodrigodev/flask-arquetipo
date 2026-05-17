@@ -1,0 +1,192 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "Flask Arquetipo API",
+		"description": "Colección de endpoints para el arquetipo Flask N-Tier (Autenticación y Usuario)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Autenticación",
+			"item": [
+				{
+					"name": "Iniciar Sesión (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"correo\": \"admin@arquetipo.com\",\n    \"clave\": \"admin123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/autenticacion/iniciar-sesion",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"autenticacion",
+								"iniciar-sesion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Iniciar Sesión (Usuario)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"correo\": \"usuario@arquetipo.com\",\n    \"clave\": \"usuario123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/autenticacion/iniciar-sesion",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"autenticacion",
+								"iniciar-sesion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Registrar Cuenta",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Nuevo\",\n    \"apellidos\": \"Usuario\",\n    \"correo\": \"nuevo@correo.com\",\n    \"clave\": \"clave123\",\n    \"telefono\": \"+51900000000\",\n    \"direccion\": \"Av. Principal 123\",\n    \"referencia\": \"Cerca al parque\",\n    \"codigo_postal\": \"15001\",\n    \"distrito_id\": \"150101\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/autenticacion/registrar-cuenta",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"autenticacion",
+								"registrar-cuenta"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cerrar Sesión",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/autenticacion/cerrar-sesion",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"autenticacion",
+								"cerrar-sesion"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Usuario",
+			"item": [
+				{
+					"name": "Obtener Mi Perfil",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/usuario/perfil",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"usuario",
+								"perfil"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Script para capturar el token automáticamente después del login",
+					"if (pm.response.code === 200 || pm.response.code === 201) {",
+					"    var jsonData = pm.response.json();",
+					"    if (jsonData.datos && jsonData.datos.token) {",
+					"        pm.environment.set(\"token\", jsonData.datos.token);",
+					"    }",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
