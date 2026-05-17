@@ -4,6 +4,8 @@ from sqlalchemy import text
 from src.config.base_de_datos import db
 from src.model.usuario.rol import Rol, NombreRol
 from src.model.usuario.usuario import Usuario
+from src.model.ubicacion.departamento import Departamento
+from src.model.ubicacion.provincia import Provincia
 from src.model.ubicacion.distrito import Distrito
 
 def _asegurar_esquemas(app):
@@ -16,7 +18,7 @@ def _asegurar_esquemas(app):
         app.logger.error(f"Error al crear esquemas: {str(e)}")
 
 def _cargar_catalogos_sql(app):
-    if not Distrito.query.first():
+    if not Departamento.query.first() or not Provincia.query.first() or not Distrito.query.first():
         try:
             sql_path = os.path.join(app.root_path, 'src', 'config', 'sql', 'ubicacion_peru.sql')
             if os.path.exists(sql_path):
